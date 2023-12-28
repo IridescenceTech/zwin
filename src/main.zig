@@ -1,18 +1,14 @@
+const std = @import("std");
 const zwin = @import("zwin");
-const glfw = @import("glfw");
 
 pub fn main() !void {
-    try zwin.init(.OpenGL, 3, 3);
+    try zwin.init(.OpenGL, 4, 6);
     defer zwin.deinit();
 
-    try zwin.createWindow(800, 640, "Hello World");
+    try zwin.createWindow(800, 640, "Hello World", false);
 
     while (!zwin.shouldClose()) {
-        if (zwin.getKey(glfw.KeyEscape) == glfw.Press) {
-            zwin.setShouldClose(true);
-        }
-
-        zwin.swapBuffers();
-        zwin.pollEvents();
+        zwin.update();
+        zwin.render();
     }
 }

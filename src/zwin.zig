@@ -3,7 +3,9 @@ const glfw = @import("glfw");
 
 var initialized = false;
 var api_window: ?*glfw.Window = null;
+var graphics_api: GraphicsAPI = .None;
 
+/// The graphics API to use.
 pub const GraphicsAPI = enum {
     None,
     OpenGL,
@@ -12,9 +14,15 @@ pub const GraphicsAPI = enum {
     DirectX,
 };
 
+/// Initializes the windowing system with the given graphics API.
+/// The version numbers are only used for OpenGL and OpenGL ES.
+/// If the API is set to `None` or `Vulkan` or `DirectX`,
+/// the window will not have a graphics context attached to it.
+/// These contexts will be created later with `createWindow`.
 pub fn init(api: GraphicsAPI, ver_maj: i32, ver_min: i32) !void {
     try glfw.init();
     initialized = true;
+    graphics_api = api;
 
     glfw.windowHint(glfw.SRGBCapable, 1);
 
@@ -32,20 +40,18 @@ pub fn init(api: GraphicsAPI, ver_maj: i32, ver_min: i32) !void {
 
             glfw.windowHint(glfw.ContextVersionMajor, ver_maj);
             glfw.windowHint(glfw.ContextVersionMinor, ver_min);
-
-            glfw.makeContextCurrent(api_window);
         },
 
         .GLES => {
             glfw.windowHint(glfw.ClientAPI, glfw.OpenGLESAPI);
             glfw.windowHint(glfw.ContextVersionMajor, ver_maj);
             glfw.windowHint(glfw.ContextVersionMinor, ver_min);
-
-            glfw.makeContextCurrent(api_window);
         },
     }
 }
 
+/// Deinitializes the windowing system.
+/// This will destroy all windows and their contexts.
 pub fn deinit() void {
     if (api_window != null) {
         glfw.destroyWindow(api_window);
@@ -54,14 +60,22 @@ pub fn deinit() void {
     glfw.terminate();
 }
 
-pub fn createWindow(width: u16, height: u16, title: [:0]const u8) !void {
+/// Creates a window with the given dimensions and title.
+pub fn createWindow(width: u16, height: u16, title: [:0]const u8, vsync: bool) !void {
     if (!initialized) {
         return error.NotInitialized;
     }
 
     api_window = try glfw.createWindow(width, height, title, null, null);
+
+    if (graphics_api == .OpenGL or graphics_api == .GLES) {
+        glfw.makeContextCurrent(api_window);
+    }
+
+    setVsync(vsync);
 }
 
+/// Whether the window should close.
 pub fn shouldClose() bool {
     if (!initialized or api_window == null) {
         return true;
@@ -70,30 +84,30 @@ pub fn shouldClose() bool {
     return glfw.windowShouldClose(api_window);
 }
 
+/// Set whether the window should close.
 pub fn setShouldClose(state: bool) void {
     if (initialized and api_window != null) {
         glfw.setWindowShouldClose(api_window, state);
     }
 }
 
+/// Sets the window's VSYNC state.
 pub fn setVsync(state: bool) void {
     if (initialized and api_window != null) {
-        glfw.swapInterval(if (state) 1 else 0);
+        if (graphics_api == .OpenGL or graphics_api == .GLES) {
+            glfw.swapInterval(if (state) 1 else 0);
+        }
     }
 }
 
-pub fn swapBuffers() void {
-    glfw.swapBuffers(api_window);
+/// Swap the draw and display buffers.
+pub fn render() void {
+    if (graphics_api == .OpenGL or graphics_api == .GLES) {
+        glfw.swapBuffers(api_window);
+    }
 }
 
-pub fn pollEvents() void {
+/// Polls for input events.
+pub fn update() void {
     glfw.pollEvents();
-}
-
-pub fn getKey(key: i32) glfw.KeyState {
-    if (!initialized or api_window == null) {
-        return glfw.Release;
-    }
-
-    return glfw.getKey(api_window, key);
 }

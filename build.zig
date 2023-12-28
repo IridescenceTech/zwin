@@ -21,7 +21,6 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
     exe.addModule("zwin", zwin);
-    exe.addModule("glfw", glfw);
     exe.linkLibC();
     exe.linkSystemLibrary("glfw");
 
