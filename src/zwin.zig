@@ -32,12 +32,16 @@ pub fn init(api: GraphicsAPI, ver_maj: i32, ver_min: i32) !void {
 
             glfw.windowHint(glfw.ContextVersionMajor, ver_maj);
             glfw.windowHint(glfw.ContextVersionMinor, ver_min);
+
+            glfw.makeContextCurrent(api_window);
         },
 
         .GLES => {
             glfw.windowHint(glfw.ClientAPI, glfw.OpenGLESAPI);
             glfw.windowHint(glfw.ContextVersionMajor, ver_maj);
             glfw.windowHint(glfw.ContextVersionMinor, ver_min);
+
+            glfw.makeContextCurrent(api_window);
         },
     }
 }
