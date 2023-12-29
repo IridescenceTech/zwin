@@ -102,7 +102,7 @@ pub fn setVsync(state: bool) void {
 
 /// Swap the draw and display buffers.
 pub fn render() void {
-    if (graphics_api == .OpenGL or graphics_api == .GLES) {
+    if (graphics_api == .OpenGL or graphics_api == .GLES and api_window != null and initialized) {
         glfw.swapBuffers(api_window);
     }
 }
@@ -110,4 +110,13 @@ pub fn render() void {
 /// Polls for input events.
 pub fn update() void {
     glfw.pollEvents();
+}
+
+/// OpenGL Load Addr
+pub fn getGLProcAddr(name: [:0]const u8) ?*const fn () callconv(.C) void {
+    if (graphics_api == .OpenGL or graphics_api == .GLES) {
+        return glfw.getProcAddress(name);
+    }
+
+    return null;
 }
