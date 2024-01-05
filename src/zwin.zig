@@ -112,15 +112,6 @@ pub fn update() void {
     glfw.pollEvents();
 }
 
-/// OpenGL Load Addr
-pub fn getGLProcAddr(name: [:0]const u8) ?*const fn () callconv(.C) void {
-    if (graphics_api == .OpenGL or graphics_api == .GLES) {
-        return glfw.getProcAddress(name);
-    }
-
-    return null;
-}
-
 /// Vulkan Load Addr
 pub fn getVKProcAddr(instance: usize, name: [:0]const u8) ?*const fn () callconv(.C) void {
     if (graphics_api == .Vulkan) {
