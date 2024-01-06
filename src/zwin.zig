@@ -25,6 +25,7 @@ pub fn init(api: GraphicsAPI, ver_maj: i32, ver_min: i32) !void {
     graphics_api = api;
 
     glfw.windowHint(glfw.SRGBCapable, 1);
+    glfw.windowHint(glfw.Resizable, 0);
 
     switch (api) {
         .None, .Vulkan, .DirectX => {
