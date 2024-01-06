@@ -1,5 +1,6 @@
 const std = @import("std");
 const glfw = @import("glfw");
+const builtin = @import("builtin");
 
 var initialized = false;
 var api_window: ?*glfw.Window = null;
@@ -41,6 +42,10 @@ pub fn init(api: GraphicsAPI, ver_maj: i32, ver_min: i32) !void {
 
             glfw.windowHint(glfw.ContextVersionMajor, ver_maj);
             glfw.windowHint(glfw.ContextVersionMinor, ver_min);
+
+            if (builtin.mode == .Debug) {
+                glfw.windowHint(glfw.OpenGLDebugContext, 1);
+            }
         },
 
         .GLES => {
