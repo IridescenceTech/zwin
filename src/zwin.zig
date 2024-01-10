@@ -118,27 +118,6 @@ pub fn update() void {
     glfw.pollEvents();
 }
 
-/// Vulkan Load Addr
-pub fn getVKProcAddr(instance: usize, name: [:0]const u8) ?*const fn () callconv(.C) void {
-    if (graphics_api == .Vulkan) {
-        return glfw.getInstanceProcAddress(instance, name);
-    }
-
-    return null;
-}
-
-pub fn getRequiredInstanceExtensions(count: *u32) ?[*][*:0]const u8 {
-    if (graphics_api == .Vulkan) {
-        return glfw.getRequiredInstanceExtensions(count);
-    }
-
-    return null;
-}
-
-pub fn createWindowSurface(instance: glfw.VkInstance, allocator: ?*const glfw.VkAllocationCallbacks, surface: *glfw.VkSurfaceKHR) glfw.VkResult {
-    if (graphics_api == .Vulkan) {
-        return glfw.createWindowSurface(instance, api_window.?, allocator, surface);
-    }
-
-    return .error_unknown;
+pub fn get_api_window() ?*anyopaque {
+    return api_window;
 }
